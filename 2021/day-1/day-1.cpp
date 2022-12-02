@@ -15,7 +15,7 @@ int count(const std::vector<int> &nums) {
 
 int count2(std::vector<int> nums) {
   std::adjacent_difference(std::begin(nums), std::end(nums), std::begin(nums));
-  return std::ranges::count_if(nums, [](int i) { return i > 0;}) - 1;
+  return std::count_if(std::begin(nums) + 1, std::end(nums), [](int i) { return i > 0;});
 }
 
 int sum(int i, const std::vector<int> &nums) {

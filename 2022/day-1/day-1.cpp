@@ -16,7 +16,6 @@ int top_three(std::vector<int> &elves) {
 int main() {
   std::vector<int> elves;
   int sum{};
-  // How can I make this logic nicer?
   for (std::string line; std::getline(std::cin, line); ) {
     try {
       const int num{std::stoi(line)};
@@ -26,8 +25,6 @@ int main() {
       sum = 0;
     }
   }
-  // Final sum doesn't get appended
-  elves.push_back(sum);
     
   std::cout << max(elves) << "\n";
   std::cout << top_three(elves) << "\n";
