@@ -3,7 +3,6 @@ import sys
 sys.setrecursionlimit(10**6)
 lines = [line.strip() for line in sys.stdin]
 
-grid = [[c for c in line] for line in lines]
 R = len(lines)
 assert R > 0
 C = len(lines[0])
@@ -19,28 +18,29 @@ for r in range(R):
         if lines[r][c] == "^":
             sr, sc = r, c
 
-visited = set()
-seen = set()
-r, c, d = sr, sc, 0
-while True:
-    if (r, c, d) in visited:
-        break
+for tr in range(R):
+    for tc in range(C):
+        visited = set()
+        seen = set()
+        r, c, d = sr, sc, 0
+        while True:
+            if (r, c, d) in visited:
+                p2 += 1
+                break
 
-    visited.add((r, c, d))
-    seen.add((r, c))
-    grid[r][c] = "X"
+            visited.add((r, c, d))
+            seen.add((r, c))
 
-    dr, dc = dirs[d]
-    nr, nc = r + dr, c + dc
+            dr, dc = dirs[d]
+            nr, nc = r + dr, c + dc
 
-    if not (0 <= nr < R and 0 <= nc < C):
-        p1 = len(seen)
-        break
-    if grid[nr][nc] == "#":
-        d = (d + 1) % 4
-    else:
-        r, c = nr, nc
+            if not (0 <= nr < R and 0 <= nc < C):
+                p1 = len(seen)
+                break
+            if lines[nr][nc] == "#" or (nr, nc) == (tr, tc):
+                d = (d + 1) % 4
+            else:
+                r, c = nr, nc
 
 print(p1)
-for row in grid:
-    print("".join(row))
+print(p2)
