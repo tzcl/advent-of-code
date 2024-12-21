@@ -1,58 +1,57 @@
-import itertools
-
-input = open("sample").read().strip()
+from dataclasses import dataclass
 
 
-def parse(input: str) -> list[str]:
-    memory = []
-    counter = itertools.count()
+@dataclass(frozen=True)
+class Block:
+    pos: int
+    size: int
+    id: int
 
-    for i, s in enumerate(input):
-        n = int(s)
-        ch = "."
-        if i % 2 == 0:
-            ch = str(next(counter))
-        memory.extend([ch] * n)
-
-    return memory
+    def checksum(self) -> int:
+        # Returns id * ((pos + 1) + ... + (pos + size))
+        return self.id * (2 * self.pos + self.size - 1) * self.size // 2
 
 
-def defrag(memory: list[str]) -> list[str]:
-    free = memory.index(".")
-    i = len(memory) - 1
-    while i >= 0 and memory[i] == ".":
-        i -= 1
-
-    while free < i:
-        memory[i], memory[free] = memory[free], memory[i]
-        while free < len(memory) and memory[free] != ".":
-            free += 1
-        while i >= 0 and memory[i] == ".":
-            i -= 1
-
-    return memory
+input = open("input").read().strip()
 
 
-def checksum(memory: list[str]) -> int:
-    acc = 0
+def parse(input, p1=True):
+    files, gaps, p = [], [], 0
+    for i, n in enumerate(map(int, input)):
+        if p1 and i % 2 == 0:
+            files.extend([Block(p + x, 1, i // 2) for x in range(n)])
+        else:
+            (files, gaps)[i % 2].append(Block(p, n, i // 2))
+        p += n
 
-    for i, s in enumerate(memory):
-        if s == ".":
-            break
-        n = int(s)
-        acc += i * n
+    return files, gaps
 
-    return acc
+
+def renumerate(sequence):
+    """Enumerate a sequence in reverse."""
+    return zip(range(len(sequence) - 1, -1, -1), reversed(sequence))
+
+
+def defrag(files, gaps):
+    for i, fb in renumerate(files):
+        for j, gb in enumerate(gaps):
+            if gb.pos >= fb.pos:
+                break
+            if gb.size >= fb.size:
+                files[i] = Block(gb.pos, fb.size, fb.id)
+                gaps[j] = Block(gb.pos + fb.size, gb.size - fb.size, gb.id)
+                break
+
+
+def checksum(files):
+    return sum(f.checksum() for f in files)
 
 
 if __name__ == "__main__":
-    print(input)
+    fs, gs = parse(input)
+    defrag(fs, gs)
+    print(checksum(fs))
 
-    memory = parse(input)
-    print(memory)
-
-    defragged = defrag(memory)
-    print(defragged)
-
-    c = checksum(defragged)
-    print(c)
+    fs, gs = parse(input, p1=False)
+    defrag(fs, gs)
+    print(checksum(fs))
