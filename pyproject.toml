@@ -7,6 +7,7 @@ requires-python = ">=3.12"
 dependencies = [
     "google-re2>=1.1.20240702",
     "ipykernel>=7.1.0",
+    "nbstripout>=0.8.2",
     "pywatchman>=2.0.0",
 ]
 
